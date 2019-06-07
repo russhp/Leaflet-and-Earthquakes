@@ -1,4 +1,4 @@
-d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson", geodata => {
+d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson", geodata => {
 
 
     // function to make popup markers
@@ -54,23 +54,29 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geoj
         pointToLayer: makeCircles
     });
     // make light background layer
-    var streets = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+    var streets = new L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
         attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
         maxZoom: 18,
+        noWrap: true,
+        bounds: [[-180, -180], [180, 180]],
         id: "mapbox.streets",
         accessToken: API_KEY
     });
     // make dark background layer
-    var darkmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+    var darkmap = new L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
         attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
         maxZoom: 18,
+        noWrap: true,
+        bounds: [[-180, -180], [180, 180]],
         id: "mapbox.dark",
         accessToken: API_KEY
     });
     // make satellite background layer
-    var satellite = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+    var satellite = new L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
         attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
         maxZoom: 18,
+        noWrap: true,
+        bounds: [[-180, -180], [180, 180]],
         id: "mapbox.satellite",
         accessToken: API_KEY
     });
@@ -79,12 +85,15 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geoj
     var myMap = L.map("map", {
         center: [39.00, -50.0],
         zoom: 3,
-        layers: [streets, earthquakes]
+        minZoom: 2,
+        layers: [satellite, earthquakes]
     });
+
+    
     // add tectonic plate info
     d3.json('https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json', tectonic => {
         faultlines = L.geoJson(tectonic.features, {
-            color: 'orange'
+            color: 'orange',
         }).addTo(myMap);
         // Define a baseMaps object to hold base layers
         var baseMaps = {
